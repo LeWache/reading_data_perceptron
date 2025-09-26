@@ -1,6 +1,5 @@
 import os, re
 from typing import Dict, Iterable, Callable, Union, List, Optional
-import numpy as np
 
 # types of filters we accept per field
 Filter = Union[str, Iterable[str], re.Pattern, Callable[[Optional[str]], bool]]
@@ -9,7 +8,7 @@ def find_metadata(
         root_folder: str,
         target_filename: str,
         main_pattern: str,
-        secondary_pattern: str,
+        secondary_pattern: Optional[str] = None,
         filters: Optional[Dict[str, Filter]] = None,
         require_all: bool = False,
 ) -> List[dict]:

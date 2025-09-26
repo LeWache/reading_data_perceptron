@@ -11,16 +11,14 @@ guide_file = "figure.png"
 main_pattern = r"^w0_(?P<w0>[^_]+)__e_(?P<eta>[^_]+)__m_(?P<method>.+)$"
 secondary_pattern = r"^b_(?P<beta>.+)$"
 
+savefig = False
+#%%
 
 results = find_metadata(root, guide_file, main_pattern, secondary_pattern,
                         filters=filter)
 
 ncols, nrows = get_ncols_nrows_from_length(len(results), prefered_ncol=4)
-
-
-
 all_betas = []
-
 
 fig = PlotConfig(Title='Current_traces',ncols=ncols, nrows=nrows, sharex=True, sharey=True)
 
@@ -53,7 +51,7 @@ for i, r in enumerate(results):
     fig.ax[nx, ny].text(0.05, 0.65, r'$\eta=$' + f'{eta}', transform=fig.ax[nx, ny].transAxes, fontsize=12)
 
 fig.subplot_features(add_lbl=False)
-fig.save_figure(saving_folder, fig.Title)
+fig.save_figure(saving_folder, fig.Title, savefig=savefig)
 
 fig = PlotConfig(Title='Beta_histogram')
 plt.hist(all_betas, bins='auto')
@@ -65,7 +63,7 @@ plt.text(.7, .3,r'$N_{data}=$' + f'{len(all_betas)}', transform=fig.axes[0].tran
 
 
 fig.features(r'$\beta$', 'occurrence', add_lbl=False)
-fig.save_figure(saving_folder, fig.Title)
+fig.save_figure(saving_folder, fig.Title, savefig=savefig)
 #%%
 
 fig1 = PlotConfig(Title='weights', ncols=ncols, nrows=nrows, sharex=True, sharey=False)
@@ -118,6 +116,6 @@ for i, r in enumerate(results):
     fig2.ax[nx, ny].text(0.75, 0.65, r'$\eta=$' + f'{eta}', transform=fig2.ax[nx, ny].transAxes, fontsize=12)
 
 fig1.subplot_features(add_lbl=False)
-fig1.save_figure(saving_folder, fig1.Title)
+fig1.save_figure(saving_folder, fig1.Title, savefig=savefig)
 fig2.subplot_features(add_lbl=False)
-fig2.save_figure(saving_folder, fig2.Title)
+fig2.save_figure(saving_folder, fig2.Title, savefig=savefig)
