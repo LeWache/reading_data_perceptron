@@ -1,72 +1,25 @@
-import os
-import re
-import numpy as np
+from reading_folders_with_pattern_and_filter import *
 from Figuras import *
+
+filter = {'eta' : '0.05'}
 
 saving_folder = "/Users/grte4390/Desktop/Perceptron/Data-Sept/caracterization_24_Sept_25"
 
 root = "/Users/grte4390/Desktop/Perceptron/Data-Sept/caracterization_24_Sept_25"
 guide_file = "figure.png"
 
-W0 = 0.1
-
-pattern = r"w0_(.*?)__e_(.*?)__m_(.*)"
-
-ncols = 6
-nrows = 4
-
-def find_metadata(root_folder, target_filename, pattern):
-    results = []
-    pattern_w0 = pattern # matches w0_{initial_weight}__e_{learning_rate}__m_{method}
-    pattern_b  = r"b_(.*)"  # matches b_{beta}
-
-    for dirpath, dirnames, filenames in os.walk(root_folder):
-
-        if target_filename in filenames:
-            parts = dirpath.split(os.sep)  # break folder path into components
-
-            w0 = eta = method = beta = None
-
-            for part in parts:
-                m1 = re.match(pattern_w0, part)
-                m2 = re.match(pattern_b, part)
-                print(m1, m2)
-                if m1:
-                    w0, eta, method = m1.groups()
-                if m2:
-                    beta = m2.group(1)
-
-            results.append({
-                "path": dirpath, #os.path.join(dirpath, target_filename),
-                "w0": w0,
-                "eta": eta,
-                "method": method,
-                "beta": beta
-            })
-
-    return results
-
-def _get_files_from_metadata(meta_data, searched_file):
-
-    paths_current = []
-    path_to_check = meta_data["path"]
-
-    current_files = [
-        f for f in os.listdir(path_to_check)
-        if re.match(f"{searched_file}" + r"_\d+\.npz$", f)
-    ]
-
-    for f in current_files:
-        full_path = os.path.join(path_to_check, f)
-        paths_current.append({"path": full_path})
-
-    return paths_current
+main_pattern = r"^w0_(?P<w0>[^_]+)__e_(?P<eta>[^_]+)__m_(?P<method>.+)$"
+secondary_pattern = r"^b_(?P<beta>.+)$"
 
 
-results = find_metadata(root, guide_file, pattern)
-results.pop(0)
+results = find_metadata(root, guide_file, main_pattern, secondary_pattern,
+                        filters=filter)
+
+ncols, nrows = get_ncols_nrows_from_length(len(results), prefered_ncol=4)
+
+
+
 all_betas = []
-
 
 
 fig = PlotConfig(Title='Current_traces',ncols=ncols, nrows=nrows, sharex=True, sharey=True)
@@ -80,7 +33,7 @@ for i, r in enumerate(results):
     method = r["method"]
     beta = r["beta"]
 
-    current_files = _get_files_from_metadata(r, 'current')
+    current_files = get_files_from_metadata(r, 'current')
 
     for f in current_files:
         path = f["path"]
@@ -96,8 +49,8 @@ for i, r in enumerate(results):
 
         fig.ax[nx, ny].plot(x, y)
 
-    fig.ax[nx, ny].text(0.05, 0.85, r'$\omega_0=$'+f'{w0}',transform=fig.ax[nx, ny].transAxes, fontsize=10)
-    fig.ax[nx, ny].text(0.05, 0.75, r'$\eta=$' + f'{eta}', transform=fig.ax[nx, ny].transAxes, fontsize=10)
+    fig.ax[nx, ny].text(0.05, 0.85, r'$\omega_0=$'+f'{w0}',transform=fig.ax[nx, ny].transAxes, fontsize=12)
+    fig.ax[nx, ny].text(0.05, 0.65, r'$\eta=$' + f'{eta}', transform=fig.ax[nx, ny].transAxes, fontsize=12)
 
 fig.subplot_features(add_lbl=False)
 fig.save_figure(saving_folder, fig.Title)
@@ -127,7 +80,7 @@ for i, r in enumerate(results):
     method = r["method"]
     beta = r["beta"]
 
-    trial_files = _get_files_from_metadata(r, 'trial')
+    trial_files = get_files_from_metadata(r, 'trial')
 
     n_iterations = 250
     average_weights = np.zeros(n_iterations)
@@ -143,7 +96,7 @@ for i, r in enumerate(results):
         weights = data['weights']
         errors = data['errors']
 
-        mask = (~np.isnan(weights)) & (np.abs(weights) <= 1.5) & (~np.isnan(errors)) & (np.abs(errors) <= 2)
+        mask = (~np.isnan(weights)) & (~np.isnan(errors)) & (np.abs(errors) <= 2)
         weights_plot = weights[mask]
         errors_plot = errors[mask]
 
@@ -158,11 +111,11 @@ for i, r in enumerate(results):
     fig1.ax[nx, ny].plot(average_weights/ n_average, color = 'black', alpha=1, label='avg weights')
     fig2.ax[nx, ny].plot(average_errors / n_average, color = 'black', alpha=1, label='avg errors')
 
-    fig1.ax[nx, ny].text(0.05, 0.15, r'$\omega_0=$'+f'{w0}',transform=fig1.ax[nx, ny].transAxes, fontsize=10)
-    fig1.ax[nx, ny].text(0.05, 0.05, r'$\eta=$' + f'{eta}', transform=fig1.ax[nx, ny].transAxes, fontsize=10)
+    fig1.ax[nx, ny].text(0.75, 0.85, r'$\omega_0=$'+f'{w0}',transform=fig1.ax[nx, ny].transAxes, fontsize=12)
+    fig1.ax[nx, ny].text(0.75, 0.65, r'$\eta=$' + f'{eta}', transform=fig1.ax[nx, ny].transAxes, fontsize=12)
 
-    fig2.ax[nx, ny].text(0.05, 0.15, r'$\omega_0=$'+f'{w0}',transform=fig2.ax[nx, ny].transAxes, fontsize=10)
-    fig2.ax[nx, ny].text(0.05, 0.05, r'$\eta=$' + f'{eta}', transform=fig2.ax[nx, ny].transAxes, fontsize=10)
+    fig2.ax[nx, ny].text(0.75, 0.85, r'$\omega_0=$'+f'{w0}',transform=fig2.ax[nx, ny].transAxes, fontsize=12)
+    fig2.ax[nx, ny].text(0.75, 0.65, r'$\eta=$' + f'{eta}', transform=fig2.ax[nx, ny].transAxes, fontsize=12)
 
 fig1.subplot_features(add_lbl=False)
 fig1.save_figure(saving_folder, fig1.Title)
