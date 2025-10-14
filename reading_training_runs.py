@@ -1,17 +1,19 @@
 from reading_folders_with_pattern_and_filter import *
 from Figuras import *
 
-filter = {'eta' : '0.05'}
+filter = {'eta' : '0.05'} #0.5, 0.1, 0.05, 0.01
+Title_aux = '__eta_' + filter['eta']
 
-saving_folder = "/Users/grte4390/Desktop/Perceptron/Data-Sept/caracterization_24_Sept_25"
 
-root = "/Users/grte4390/Desktop/Perceptron/Data-Sept/caracterization_24_Sept_25"
+saving_folder = "/Users/grte4390/Desktop/Perceptron/Data-Oct/caracterization_2_Oct_25"
+
+root = "/Users/grte4390/Desktop/Perceptron/Data-Oct/caracterization_2_Oct_25"
 guide_file = "figure.png"
 
 main_pattern = r"^w0_(?P<w0>[^_]+)__e_(?P<eta>[^_]+)__m_(?P<method>.+)$"
 secondary_pattern = r"^b_(?P<beta>.+)$"
 
-savefig = False
+savefig = True
 #%%
 
 results = find_metadata(root, guide_file, main_pattern, secondary_pattern,
@@ -20,7 +22,7 @@ results = find_metadata(root, guide_file, main_pattern, secondary_pattern,
 ncols, nrows = get_ncols_nrows_from_length(len(results), prefered_ncol=4)
 all_betas = []
 
-fig = PlotConfig(Title='Current_traces',ncols=ncols, nrows=nrows, sharex=True, sharey=True)
+fig = PlotConfig(Title='Current_traces'+Title_aux,ncols=ncols, nrows=nrows, sharex=True, sharey=True)
 
 for i, r in enumerate(results):
 
@@ -53,7 +55,7 @@ for i, r in enumerate(results):
 fig.subplot_features(add_lbl=False)
 fig.save_figure(saving_folder, fig.Title, savefig=savefig)
 
-fig = PlotConfig(Title='Beta_histogram')
+fig = PlotConfig(Title='Beta_histogram'+Title_aux)
 plt.hist(all_betas, bins='auto')
 
 plt.text(.7, .9, r'$\hat{\beta}=$' + f'{np.mean(all_betas):.2f}', transform=fig.axes[0].transAxes, fontsize=15)
@@ -66,8 +68,8 @@ fig.features(r'$\beta$', 'occurrence', add_lbl=False)
 fig.save_figure(saving_folder, fig.Title, savefig=savefig)
 #%%
 
-fig1 = PlotConfig(Title='weights', ncols=ncols, nrows=nrows, sharex=True, sharey=False)
-fig2 = PlotConfig(Title='errors',ncols=ncols, nrows=nrows, sharex=True, sharey=False)
+fig1 = PlotConfig(Title='weights'+Title_aux, ncols=ncols, nrows=nrows, sharex=True, sharey=False)
+fig2 = PlotConfig(Title='errors'+Title_aux,ncols=ncols, nrows=nrows, sharex=True, sharey=False)
 
 for i, r in enumerate(results):
 

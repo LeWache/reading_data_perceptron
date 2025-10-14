@@ -26,7 +26,8 @@ def try_to_fit(function, x, y, **kwargs_fit):
 
 def filter_currents(current, detuning, amplitud_filter, n_help:int =3, n_std=5):
 
-    # return current, detuning
+    if current[0]>current[-1]:
+        current = current[::-1]
 
     amplitud = ( current.max() - current.min() ) / 2
     if amplitud > amplitud_filter:
