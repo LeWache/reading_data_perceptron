@@ -1,4 +1,4 @@
-from reading_folders_with_pattern_and_filter import *
+from utilities.reading_folders_with_pattern_and_filter import *
 from Figuras import *
 from scipy.optimize import curve_fit
 

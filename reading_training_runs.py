@@ -1,4 +1,4 @@
-from reading_folders_with_pattern_and_filter import *
+from utilities.reading_folders_with_pattern_and_filter import *
 from Figuras import *
 
 filter = {'eta' : '0.05'} #0.5, 0.1, 0.05, 0.01
